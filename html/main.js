@@ -23,19 +23,19 @@ function processJson(json) {
 						if (obj.status === 2) {
 							tableRows[tableIndex + 1].children[1].innerText = "Starting";
 							tableRows[tableIndex + 1].children[1].className = "device-status starting";
-							tableRows[tableIndex + 1].children[2].children[0].disabled = true;
+							tableRows[tableIndex + 1].children[2].children[0].classList.add("disabled");
 						} else if (obj.status === 1) {
 							tableRows[tableIndex + 1].children[1].innerText = "Online";
 							tableRows[tableIndex + 1].children[1].className = "device-status online";
-							tableRows[tableIndex + 1].children[2].children[0].disabled = true;
+							tableRows[tableIndex + 1].children[2].children[0].classList.add("disabled");
 						} else if (obj.status === 0) {
 							tableRows[tableIndex + 1].children[1].innerText = "Offline";
 							tableRows[tableIndex + 1].children[1].className = "device-status offline";
-							tableRows[tableIndex + 1].children[2].children[0].disabled = false;
+							tableRows[tableIndex + 1].children[2].children[0].classList.remove("disabled");
 						} else if (obj.status === -1) {
 							tableRows[tableIndex + 1].children[1].innerText = "Unknown";
 							tableRows[tableIndex + 1].children[1].className = "device-status unknown";
-							tableRows[tableIndex + 1].children[2].children[0].disabled = false;
+							tableRows[tableIndex + 1].children[2].children[0].classList.remove("disabled");
 						}
 						currentRows[tableIndex] = null;
 					} else {
@@ -65,6 +65,7 @@ function processJson(json) {
 				if (tableRows[i].children[0].innerText === msgObj.data) {
 					tableRows[i].children[1].innerText = "Starting";
 					tableRows[i].children[1].className = "device-status starting";
+					tableRows[i].children[2].children[0].classList.add("disabled");
 				}
 			}
 			setTimeout(() => {notificationObj.removeChild(newDiv)}, 5000);
@@ -96,7 +97,7 @@ function newRow(obj) {
 		statusClass = "unknown";
 		buttonDisabled = false;
 	}
-    template.innerHTML = "<tr id='" + obj.name + "'>\n<td class='device-name'>" + obj.name + "</td>\n<td class='device-status " + statusClass + "'>" + status + "</td>\n<td class='device-wake'><button type='button' onclick='sendMessage(\"{\\\"command\\\":1,\\\"name\\\":\\\"" + obj.name + "\\\"}\");' class='wake-button'" + (buttonDisabled ? " disabled" : "") + ">Wake</button></td>\n</tr>";
+    template.innerHTML = "<tr id='" + obj.name + "'>\n<td class='device-name'>" + obj.name + "</td>\n<td class='device-status " + statusClass + "'>" + status + "</td>\n<td class='device-wake'><button type='button' onclick='wakeDevice(\"" + obj.name + "\");' class='wake-button" + (buttonDisabled ? " disabled" : "") + "'>Wake</button></td>\n</tr>";
     return template.content.firstChild;
 }
 
@@ -166,4 +167,28 @@ function sendMessage(msg) {
 	if (websocket !== null && websocket.websocket.readyState === 1) {
 		websocket.websocket.send(msg);
 	}
+}
+
+function refresh() {
+	sendMessage("{\"command\":2}");
+}
+
+function wakeDevice(device) {
+    const template = document.createElement('template');
+    template.innerHTML = "<div class='confirmation'><h3>Wake " + device + "?</h3><div class='confirmation-buttons'><button type='button' onclick='hidePopup()'>Cancel</button><button type='button' onclick='wakeDeviceInternal(\"" + device + "\")'>Confirm</button></div></div>";
+    const elem = template.content.firstChild;
+	const popupObj = document.getElementById("popup");
+	popupObj.appendChild(elem);
+}
+
+function hidePopup() {
+	const popupObj = document.getElementById("popup");
+	while (popupObj.firstChild) {
+		popupObj.removeChild(popupObj.firstChild);
+	}
+}
+
+function wakeDeviceInternal(device) {
+	hidePopup();
+	sendMessage("{\"command\":1,\"name\":\"" + device + "\"}");
 }

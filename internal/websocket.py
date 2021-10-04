@@ -20,6 +20,9 @@ class Config:
         self.settings = configJson['settings']
         self.maxPings = self.settings['max_pings']
         self.delayBetweenPings = self.settings['delay_between_pings']
+        self.idleStatusWatchDelay = self.settings['idle_status_watch_delay']
+        self.activeStatusWatchDelay = self.settings['active_status_watch_delay']
+        self.regularUpdateInterval = self.settings['regular_update_interval']
 
 class Status:
     def __init__(self):
@@ -28,7 +31,13 @@ class Status:
         self.checkingDevices = {}
         for device in self.config.devices:
             self.devices[device['name']] = -1
-            asyncio.ensure_future(self.checkStatus(device))
+            asyncio.ensure_future(self.getStatus(device))
+    
+    def refreshAll(self):
+        if debug:
+            print("Refreshing status for all devices")
+        for device in self.config.devices:
+            asyncio.ensure_future(self.getStatus(device))
     
     def getDevice(self, name):
         for device in self.config.devices:
@@ -45,6 +54,22 @@ class Status:
             return "{\"type\":0,\"data\":" + ret + "}"
         else:
             return "{\"type\":0,\"data\":[]}"
+    
+    async def getStatus(self, device):
+        asyncio.ensure_future(self.getStatusInternal(device))
+    
+    async def getStatusInternal(self, device):
+        if debug:
+            print("Pinging " + device['name'] + " at " + device['ip'])
+        process = await asyncio.create_subprocess_shell("ping -c 1 " + device['ip'], stdout=subprocess.DEVNULL)
+        returnCode = await process.wait()
+        if debug:
+            print("Device " + device['name'] + " returned " + str(returnCode))
+        if returnCode == 0:
+            self.devices[device['name']] = 1
+        else:
+            if device['name'] not in self.checkingDevices:
+                self.devices[device['name']] = 0
     
     async def checkStatus(self, device):
         if device['name'] in self.checkingDevices:
@@ -97,6 +122,8 @@ async def connect(websocket, path):
                         os.system("wakeonlan " + device['mac'])
                         status.devices[device['name']] = 2
                         asyncio.ensure_future(status.checkStatus(device))
+                elif msgJson['command'] == 2:
+                    status.refreshAll()
             except json.JSONDecodeError:
                 pass
     except websockets.exceptions.ConnectionClosedError:
@@ -105,16 +132,28 @@ async def connect(websocket, path):
     if debug:
         print("Connection closed")
 
+idleUpdateCounter = 0
+
 @asyncio.coroutine
 def scheduleUpdates():
     while True:
-        yield from asyncio.sleep(5)
+        yield from asyncio.sleep(status.config.regularUpdateInterval)
         msg = status.currentStatus()
         if debug:
             print("Updating all connections")
             print(msg)
         for connection in connections:
             yield from connection.send(msg)
+        global idleUpdateCounter
+        idleUpdateCounter += 1
+        if len(connections) > 0 and status.config.activeStatusWatchDelay > 0:
+            if idleUpdateCounter >= status.config.activeStatusWatchDelay:
+                idleUpdateCounter = 0
+                status.refreshAll()
+        elif status.config.idleStatusWatchDelay > 0:
+            if idleUpdateCounter >= status.config.idleStatusWatchDelay:
+                idleUpdateCounter = 0
+                status.refreshAll()
 
 def main():
     parser = argparse.ArgumentParser()

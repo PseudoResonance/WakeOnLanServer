@@ -13,6 +13,9 @@
 	],
 	"settings": {
 		"max_pings": 15,
-		"delay_between_pings": 1
+		"delay_between_pings": 1,
+		"regular_update_interval": 5,
+		"idle_status_watch_delay": 60,
+		"active_status_watch_delay": 6
 	}
 }

@@ -13,7 +13,12 @@
 	<body onload="getWebsocket()">
 		<div class="container">
 			<form class="form" method="post">
-				<h1 class="heading">Wake On LAN</h1>
+				<span class="clearfix">
+					<span class="header">
+						<h1 class="heading">Wake On LAN</h1>
+						<button class="refresh-button" type="button" onclick="refresh();">Refresh</button>
+					</span>
+				</span>
 				<div class="table-container">
 					<table id="device-table" class="table">
 						<tr class="table-header">
@@ -26,6 +31,7 @@
 			</form>
 		</div>
 		<div id="gray-out"><p><span id="gray-out-title">Connecting</span><br /><span id="gray-out-timer">Now</span></p></div>
+		<div id="popup"></div>
 		<div id="notifications"></div>
 	</body>
 </html>
