@@ -1,0 +1,180 @@
+@font-face {
+font-family:"wf_segoe-ui_light";
+src:url(//i.s-microsoft.com/fonts/segoe-ui/west-european/light/latest.eot);
+src:local("Segoe UI Light"),local("Segoe WP Light"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/light/latest.eot?#iefix) format("embedded-opentype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/light/latest.woff) format("woff"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/light/latest.ttf) format("truetype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/light/latest.svg#web) format("svg");
+font-weight:400;
+font-style:normal
+}
+
+@font-face {
+font-family:"wf_segoe-ui_normal";
+src:url(//i.s-microsoft.com/fonts/segoe-ui/west-european/normal/latest.eot);
+src:local("Segoe UI"),local("Segoe"),local("Segoe WP"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/normal/latest.eot?#iefix) format("embedded-opentype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/normal/latest.woff) format("woff"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/normal/latest.ttf) format("truetype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/normal/latest.svg#web) format("svg");
+font-weight:400;
+font-style:normal
+}
+
+@font-face {
+font-family:"wf_segoe-ui_semibold";
+src:url(//i.s-microsoft.com/fonts/segoe-ui/west-european/Semibold/latest.eot);
+src:local("Segoe UI Semibold"),local("Segoe Semibold"),local("Segoe WP Semibold"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/Semibold/latest.eot?#iefix) format("embedded-opentype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/Semibold/latest.woff) format("woff"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/Semibold/latest.ttf) format("truetype"),url(//i.s-microsoft.com/fonts/segoe-ui/west-european/Semibold/latest.svg#web) format("svg");
+font-weight:400;
+font-style:normal
+}
+
+@font-face {
+font-family:"wf_icons_normal";
+src:url(//i.s-microsoft.com/fonts/icons/homepage/normal/2.eot);
+src:url(//i.s-microsoft.com/fonts/icons/homepage/normal/2.eot?#iefix) format("embedded-opentype"),url(//i.s-microsoft.com/fonts/icons/homepage/normal/2.woff) format("woff"),url(//i.s-microsoft.com/fonts/icons/homepage/normal/2.ttf) format("truetype"),url(//i.s-microsoft.com/fonts/icons/homepage/normal/2.svg#web) format("svg");
+font-weight:400;
+font-style:normal
+}
+
+body {
+background:#000;
+border:0;
+}
+
+@media only screen and (max-width: 600px) {
+body {
+padding:0;
+margin:0;
+}
+}
+
+@media only screen and (min-width: 601px) {
+body {
+padding:10px 20px;
+margin:5px;
+}
+}
+
+.container {
+border:0;
+}
+
+#gray-out {
+top:0;
+bottom:0;
+left:0;
+right:0;
+position:fixed;
+background-color:rgba(0, 0, 0, 0.5);
+text-align:center;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:2em;
+}
+
+#gray-out > p {
+line-height:0.9em;
+}
+
+#gray-out-timer {
+font-size:0.5em;
+}
+
+#gray-out.hidden {
+display:none;
+}
+
+div {
+font-family:"wf_segoe-ui_semibold";
+padding:10px;
+background:rgb(50,50,50);
+border:1px solid rgb(10,10,10);
+color:#fff;
+}
+
+h1,h2,h3,h4,h5,h6 {
+margin-top:0;
+}
+
+.table-container {
+overflow-x:auto;
+border:0;
+}
+
+table {
+text-align:left;
+border-spacing:0px;
+width:100%;
+font-family:"wf_segoe-ui_normal";
+}
+
+table h1,h2,h3,h4,h5,h6 {
+margin:0;
+}
+
+td {
+padding:5px 5px;
+}
+
+tr:nth-child(even) {
+background-color:rgb(70,70,70);
+}
+
+.table-header {
+font-family:"wf_segoe-ui_light";
+}
+
+.table .device-status {
+width:10em;
+}
+
+.table .device-status.starting {
+background-color:darkorange;
+}
+
+.table .device-status.online, #notifications > div {
+background-color:forestgreen;
+}
+
+.table .device-status.offline {
+background-color:firebrick;
+}
+
+.table .device-status.unknown {
+background-color:darkviolet;
+}
+
+.table .device-wake {
+width:5em;
+}
+
+#notifications {
+top:0;
+bottom:0;
+left:0;
+right:0;
+position:fixed;
+display:flex;
+align-items:flex-end;
+justify-content:center;
+pointer-events:none;
+background-color:transparent;
+}
+
+button {
+font-family:"wf_segoe-ui_normal";
+border-radius:0;
+border:0;
+color:#fff;
+background-color:rgb(130,130,130);
+padding:5px 10px;
+transition:background-color 0.15s ease;
+}
+
+button:hover {
+background-color:rgb(150,150,150);
+}
+
+button:active {
+background-color:rgb(170,170,170);
+}
+
+button:disabled {
+color:rgb(150,150,150);
+background-color:rgb(90,90,90);
+}

@@ -1,0 +1,18 @@
+{
+	"devices": [
+		{
+			"name": "Device 1",
+			"ip": "192.168.0.2",
+			"mac": "FF:FF:FF:FF:FF:00"
+		},
+		{
+			"name": "Device 2",
+			"ip": "192.168.0.3",
+			"mac": "FF:FF:FF:FF:FF:01"
+		}
+	],
+	"settings": {
+		"max_pings": 15,
+		"delay_between_pings": 1
+	}
+}
