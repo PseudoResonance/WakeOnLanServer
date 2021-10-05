@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory title="@string/preference_main_header">
+        <EditTextPreference
+            android:defaultValue="https://wol.local"
+            android:key="site_domain"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/preference_site_domain" />
+    </PreferenceCategory>
+</androidx.preference.PreferenceScreen>

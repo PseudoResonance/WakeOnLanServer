@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Wake On LAN</string>
+    <string name="notification_error_ssl_cert_invalid">Unrecognized SSL certificate. Proceed?</string>
+    <string name="notification_continue_and_remember">Continue and Remember</string>
+    <string name="notification_continue">Continue</string>
+    <string name="notification_cancel">Cancel</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Preference Titles -->
+    <string name="preference_main_header">Main</string>
+
+    <!-- Messages Preferences -->
+    <string name="preference_site_domain">Set WoL Domain</string>
+</resources>
