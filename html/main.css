@@ -171,12 +171,27 @@ position:fixed;
 display:flex;
 align-items:center;
 justify-content:center;
-pointer-events:none;
 background-color:transparent;
+pointer-events:none;
+}
+
+#popup-click-handler {
+top:0;
+bottom:0;
+left:0;
+right:0;
+position:fixed;
+background-color:transparent;
+pointer-events:auto;
+}
+
+#popup-click-handler.hidden {
+pointer-events:none;
 }
 
 .confirmation {
 pointer-events:auto;
+z-index:1000;
 }
 
 .confirmation-buttons {
@@ -200,8 +215,9 @@ left:0;
 right:0;
 position:fixed;
 display:flex;
-align-items:flex-end;
-justify-content:center;
+align-items:center;
+justify-content:flex-end;
+flex-direction:column;
 pointer-events:none;
 background-color:transparent;
 }

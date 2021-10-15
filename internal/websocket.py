@@ -5,8 +5,10 @@ import asyncio, websockets
 import json
 from pathlib import Path
 import os, subprocess
+import time
 
 debug = False
+lastRefresh = 0
 
 class Config:
     def __init__(self):
@@ -29,15 +31,25 @@ class Status:
         self.config = Config()
         self.devices = {}
         self.checkingDevices = {}
+        lastRefresh = time.monotonic()
         for device in self.config.devices:
             self.devices[device['name']] = -1
             asyncio.ensure_future(self.getStatus(device))
     
     def refreshAll(self):
+        global lastRefresh
+        start = time.monotonic()
+        diff = start - lastRefresh
+        if diff < 15:
+            if debug:
+                print("Refreshing status rejected, last check " + str(diff) + " ago")
+            return False
+        lastRefresh = start
         if debug:
             print("Refreshing status for all devices")
         for device in self.config.devices:
             asyncio.ensure_future(self.getStatus(device))
+        return True
     
     def getDevice(self, name):
         for device in self.config.devices:
@@ -123,7 +135,7 @@ async def connect(websocket, path):
                         status.devices[device['name']] = 2
                         asyncio.ensure_future(status.checkStatus(device))
                 elif msgJson['command'] == 2:
-                    status.refreshAll()
+                    await websocket.send("{\"type\":2,\"data\":\"" + ("1" if status.refreshAll() else "0") + "\"}")
             except json.JSONDecodeError:
                 pass
     except websockets.exceptions.ConnectionClosedError:

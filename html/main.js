@@ -69,6 +69,12 @@ function processJson(json) {
 				}
 			}
 			setTimeout(() => {notificationObj.removeChild(newDiv)}, 5000);
+		} else if (msgObj.type === 2) {
+			const newDiv = document.createElement('div');
+			newDiv.textContent = "Refresh " + (msgObj.data == "1" ? "successful" : "rejected");
+			const notificationObj = document.getElementById("notifications");
+			notificationObj.appendChild(newDiv);
+			setTimeout(() => {notificationObj.removeChild(newDiv)}, 5000);
 		}
 	} catch (err) {
 		console.error(err);
@@ -175,17 +181,19 @@ function refresh() {
 
 function wakeDevice(device) {
     const template = document.createElement('template');
-    template.innerHTML = "<div class='confirmation'><h3>Wake " + device + "?</h3><div class='confirmation-buttons'><button type='button' onclick='hidePopup()'>Cancel</button><button type='button' onclick='wakeDeviceInternal(\"" + device + "\")'>Confirm</button></div></div>";
+    template.innerHTML = "<div class='confirmation' onclick='elem => {elem.stopPropagation()}'><h3>Wake " + device + "?</h3><div class='confirmation-buttons'><button type='button' onclick='hidePopup()'>Cancel</button><button type='button' onclick='wakeDeviceInternal(\"" + device + "\")'>Confirm</button></div></div>";
     const elem = template.content.firstChild;
 	const popupObj = document.getElementById("popup");
 	popupObj.appendChild(elem);
+	popupObj.children[0].classList.remove("hidden");
 }
 
 function hidePopup() {
 	const popupObj = document.getElementById("popup");
-	while (popupObj.firstChild) {
-		popupObj.removeChild(popupObj.firstChild);
+	while (popupObj.childElementCount > 1) {
+		popupObj.removeChild(popupObj.children[1]);
 	}
+	popupObj.children[0].classList.add("hidden");
 }
 
 function wakeDeviceInternal(device) {
