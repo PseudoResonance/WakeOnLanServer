@@ -4,7 +4,7 @@ import argparse
 import asyncio, websockets
 import json
 from pathlib import Path
-import os, subprocess
+import os, subprocess, sys
 import time
 
 debug = False
@@ -43,10 +43,12 @@ class Status:
         if diff < 15:
             if debug:
                 print("Refreshing status rejected, last check " + str(diff) + " ago")
+                sys.stdout.flush()
             return False
         lastRefresh = start
         if debug:
             print("Refreshing status for all devices")
+            sys.stdout.flush()
         for device in self.config.devices:
             asyncio.ensure_future(self.getStatus(device))
         return True
@@ -73,10 +75,12 @@ class Status:
     async def getStatusInternal(self, device):
         if debug:
             print("Pinging " + device['name'] + " at " + device['ip'])
+            sys.stdout.flush()
         process = await asyncio.create_subprocess_shell("ping -c 1 " + device['ip'], stdout=subprocess.DEVNULL)
         returnCode = await process.wait()
         if debug:
             print("Device " + device['name'] + " returned " + str(returnCode))
+            sys.stdout.flush()
         if returnCode == 0:
             self.devices[device['name']] = 1
         else:
@@ -87,10 +91,12 @@ class Status:
         if device['name'] in self.checkingDevices:
             if debug:
                 print("Cancelling old checking status for " + device['name'])
+                sys.stdout.flush()
             self.checkingDevices[device['name']].cancel()
             del self.checkingDevices[device['name']]
         if debug:
             print("Beginning status check for " + device['name'])
+            sys.stdout.flush()
         task = asyncio.ensure_future(self.checkStatusInternal(device))
         self.checkingDevices[device['name']] = task
         await task
@@ -101,10 +107,12 @@ class Status:
         while tryCount <= self.config.maxPings:
             if debug:
                 print("Pinging " + device['name'] + " at " + device['ip'])
+                sys.stdout.flush()
             process = await asyncio.create_subprocess_shell("ping -c 1 " + device['ip'], stdout=subprocess.DEVNULL)
             returnCode = await process.wait()
             if debug:
                 print("Device " + device['name'] + " returned " + str(returnCode) + " on attempt " + str(tryCount))
+                sys.stdout.flush()
             if returnCode == 0:
                 self.devices[device['name']] = 1
                 return
@@ -122,6 +130,7 @@ async def connect(websocket, path):
     if debug:
         print("Connection opened")
         print(status.currentStatus())
+        sys.stdout.flush()
     await websocket.send(status.currentStatus())
     try:
         async for message in websocket:
@@ -130,7 +139,12 @@ async def connect(websocket, path):
                 if msgJson['command'] == 1:
                     device = status.getDevice(msgJson['name'])
                     if device is not None:
-                        await websocket.send("{\"type\":1,\"data\":\"" + device['name'] + "\"}")
+                        msg = "{\"type\":1,\"data\":\"" + device['name'] + "\"}"
+                        for connection in connections:
+                            try:
+                                await connection.send(msg)
+                            except websockets.exceptions.WebSocketException:
+                                pass
                         os.system("wakeonlan " + device['mac'])
                         status.devices[device['name']] = 2
                         asyncio.ensure_future(status.checkStatus(device))
@@ -143,6 +157,7 @@ async def connect(websocket, path):
     connections.remove(websocket)
     if debug:
         print("Connection closed")
+        sys.stdout.flush()
 
 idleUpdateCounter = 0
 
@@ -154,8 +169,12 @@ def scheduleUpdates():
         if debug:
             print("Updating all connections")
             print(msg)
+            sys.stdout.flush()
         for connection in connections:
-            yield from connection.send(msg)
+            try:
+                yield from connection.send(msg)
+            except websockets.exceptions.WebSocketException:
+                pass
         global idleUpdateCounter
         idleUpdateCounter += 1
         if len(connections) > 0 and status.config.activeStatusWatchDelay > 0:
@@ -175,6 +194,7 @@ def main():
     debug = args.debug
     if debug:
         print("Debug output enabled")
+        sys.stdout.flush()
     asyncio.get_event_loop().run_until_complete(websockets.serve(connect, "localhost", 8080))
     asyncio.ensure_future(scheduleUpdates())
     asyncio.get_event_loop().run_forever()

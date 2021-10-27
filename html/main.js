@@ -181,7 +181,7 @@ function refresh() {
 
 function wakeDevice(device) {
     const template = document.createElement('template');
-    template.innerHTML = "<div class='confirmation' onclick='elem => {elem.stopPropagation()}'><h3>Wake " + device + "?</h3><div class='confirmation-buttons'><button type='button' onclick='hidePopup()'>Cancel</button><button type='button' onclick='wakeDeviceInternal(\"" + device + "\")'>Confirm</button></div></div>";
+    template.innerHTML = "<div class='confirmation'><h3>Wake " + device + "?</h3><div class='confirmation-buttons'><button type='button' onclick='hidePopup()'>Cancel</button><button type='button' onclick='wakeDeviceInternal(\"" + device + "\")'>Confirm</button></div></div>";
     const elem = template.content.firstChild;
 	const popupObj = document.getElementById("popup");
 	popupObj.appendChild(elem);
